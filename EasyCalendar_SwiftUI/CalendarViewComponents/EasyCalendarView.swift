@@ -169,13 +169,13 @@ struct WeekRowView: View {
                     Spacer()
                     
                     DayCellView(dayNumber: index)
-
+                        .frame(width: 30)
                     Spacer()
                     
                 }
             }
             .lineLimit(1)
-            .font(.system(size: 20))
+            .font(.system(size: 20).weight(.semibold))
 //            .frame(width: 40, height: 40)
                 
                 //Bottom Of Hstack
