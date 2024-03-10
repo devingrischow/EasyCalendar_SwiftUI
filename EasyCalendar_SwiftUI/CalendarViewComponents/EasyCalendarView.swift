@@ -12,6 +12,14 @@ struct EasyCalendarView: View {
     //Initialize Calender View Controller
     
     
+    //Initialize the Calendar Date Values
+    @StateObject var calendarViewModel:CalendarViewModel = CalendarViewModel()
+    
+    @State private var calandarWeeksBody:[[Int]] =  [[29,30,31,32,33,34,35],[29,30,31,32,33,34,35],[29,30,31,32,33,34,35],[29,30,31,32,33,34,35],[29,30,31,32,33,34,35],[29,30,31,32,33,34,35]] //Initialize with dummy numbers
+    
+    
+    @State private var monthYearLabel:[Int] = []
+    
     var body: some View {
         
         
@@ -19,25 +27,54 @@ struct EasyCalendarView: View {
             
             
             //Weekday Names To Declare
+            MonthLabelAndChanger().environmentObject(calendarViewModel)
+                .padding(.bottom, 38)
+            
+            
             Group{
-                WeekdayNamesRow()
+                WeekdayNamesRow().environmentObject(calendarViewModel)
                     .padding(.bottom, 5)
                 
                 //Calendar weekday views values
-                CalenderFullBodyView(week1Row: [1,2,3,4,5,6,7], week2Row: [1,2,3,4,5,6,7], week3Row: [1,2,3,4,5,6,7], week4Row: [1,2,3,4,5,6,7], week5Row: [1,2,3,4,5,6,7])
+                CalenderFullBodyView(week1Row: calandarWeeksBody[0], week2Row: calandarWeeksBody[1], week3Row: calandarWeeksBody[2], week4Row: calandarWeeksBody[3], week5Row: calandarWeeksBody[4], week6Row: calandarWeeksBody[5]).environmentObject(calendarViewModel)
                 
                 //Bottom Of Vstack
             }
             .padding([.leading,.trailing], 16)
-
+            
+            
+            
             
         }
-        //Frame off the Sides
+        .onAppear{
+            //On view appear, call the getMonthDay function to get the day values to populate the calendar
+            calendarViewModel.getCalendarDaysArrays()
+            
+            calandarWeeksBody = calendarViewModel.getCalandarWeeksBody()
+            
+            
+        }
+        
+        .onChange(of: calendarViewModel.calendarModel.monthOffset){ offset in
+            calandarWeeksBody = calendarViewModel.getCalandarWeeksBody()
+            print(calendarViewModel.getCalandarWeeksBody())
+
+        }
+        
+        
+        //Bottom of Vstacl
         
         
         
         
     }
+    
+    
+    
+    
+    
+    
+    
 }
 
 
@@ -46,6 +83,84 @@ struct EasyCalendarView: View {
     
     
 }
+
+
+///This view houses the current MONTH label
+///It also contains the arrow buttons to allow the user to go to and from month values
+struct MonthLabelAndChanger:View {
+    
+    @EnvironmentObject var calendarVM:CalendarViewModel
+    
+    var body: some View {
+        
+        HStack{
+            
+            HStack{
+                Button(){
+                    print("Decrement")
+                    calendarVM.decrementMonth()
+                    
+                    
+                }label: {
+                    
+                    Image(systemName: "chevron.left")
+                        .resizable()
+                    
+                        .fontWeight(.semibold)
+                    
+                        .frame(width: 22, height: 40)
+                    
+                        .padding(.leading, 16)
+                }
+                
+                //Month + Year Label
+                HStack{
+                    
+                        Text("\(calendarVM.getMonthLabel()),")
+                            .frame(height: 22)
+                            .font(.system(size: 20))
+
+                     
+                        
+                        Text("\(calendarVM.getYearLabel())")
+                        .font(.system(size: 17))
+                        .frame(height: 22, alignment:.bottom)
+                    
+
+                }
+                .padding([.trailing, .leading], 54)
+                
+                
+                
+                
+                Button(){
+                    print("Increment")
+                    
+                    calendarVM.incrementMonth()
+                }label: {
+                    Image(systemName: "chevron.right")
+                        .resizable()
+                        .fontWeight(.semibold)
+                    
+                        .frame(width: 22, height: 40)
+                }
+                
+                
+                
+            }
+            
+            Spacer()
+            
+            
+            //Bottom of HStack
+        }
+        
+    }
+    
+}
+
+
+
 
 
 ///This view is the view that places the weekday names onto the calendar.
@@ -101,19 +216,21 @@ struct CalenderFullBodyView: View {
     var week3Row:[Int]
     var week4Row:[Int]
     var week5Row:[Int]
+    var week6Row:[Int]
     
     ///This is the combined array of the week rows that make up the **Full Body  View**, takes 5 of the week arrows.
     var combinedWeeks:[[Int]]
     
     //This is the Initializer for the Full Body View
-    init(week1Row: [Int], week2Row: [Int], week3Row: [Int], week4Row: [Int], week5Row: [Int]) {
+    init(week1Row: [Int], week2Row: [Int], week3Row: [Int], week4Row: [Int], week5Row: [Int], week6Row: [Int]) {
         self.week1Row = week1Row
         self.week2Row = week2Row
         self.week3Row = week3Row
         self.week4Row = week4Row
         self.week5Row = week5Row
+        self.week6Row = week5Row
         
-        combinedWeeks = [week1Row, week2Row, week3Row, week4Row, week5Row]
+        combinedWeeks = [week1Row, week2Row, week3Row, week4Row, week5Row, week6Row]
         
         
     }
@@ -168,8 +285,11 @@ struct WeekRowView: View {
                     
                     Spacer()
                     
+                    
                     DayCellView(dayNumber: index)
                         .frame(width: 30)
+                    
+                    
                     Spacer()
                     
                 }
