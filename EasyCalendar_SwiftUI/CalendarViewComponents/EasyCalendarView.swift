@@ -22,6 +22,10 @@ struct EasyCalendarView: View {
     
     var body: some View {
         
+        GeometryReader{ geometry in
+            
+         
+         
         
         VStack{
             
@@ -46,6 +50,8 @@ struct EasyCalendarView: View {
             
             
         }
+        .frame(width: calendarViewModel.getCalendarFrameSize().width, height: calendarViewModel.getCalendarFrameSize().height)
+            
         .onAppear{
             //On view appear, call the getMonthDay function to get the day values to populate the calendar
             calendarViewModel.getCalendarDaysArrays()
@@ -53,20 +59,30 @@ struct EasyCalendarView: View {
             calandarWeeksBody = calendarViewModel.getCalandarWeeksBody()
             
             
+            calendarViewModel.setCalendarFrameSize(newCalendarSize: geometry.size)
+            
+            
+            //On Appear of the view, ENSURE the opacity is 1
+//            print("Geo width", geometry.size.width, "Geo height", geometry.size.height)
+            
         }
         
         .onChange(of: calendarViewModel.calendarModel.monthOffset){ offset in
             calandarWeeksBody = calendarViewModel.getCalandarWeeksBody()
             print(calendarViewModel.getCalandarWeeksBody())
-
+            
+            
+            
         }
         
         
         //Bottom of Vstacl
         
+       
         
         
-        
+    }
+        //Bottom Of Geometry Reader
     }
     
     
@@ -79,7 +95,7 @@ struct EasyCalendarView: View {
 
 
 #Preview {
-    EasyCalendarView()
+    ContentView()
     
     
 }
@@ -92,7 +108,8 @@ struct MonthLabelAndChanger:View {
     @EnvironmentObject var calendarVM:CalendarViewModel
     
     var body: some View {
-        
+            
+         
         HStack{
             
             HStack{
@@ -106,18 +123,19 @@ struct MonthLabelAndChanger:View {
                     Image(systemName: "chevron.left")
                         .resizable()
                     
-                        .fontWeight(.semibold)
+                        .fontWeight(.bold)
+//                        .frame(height: calendarVM.getCalendarFrameSize().height/9)
+                        .frame(width: calendarVM.getCalendarFrameSize().width/17, height: calendarVM.getCalendarFrameSize().height/9)
                     
-                        .frame(width: 22, height: 40)
-                    
-                        .padding(.leading, 16)
+                        
                 }
+                .padding(.leading, 16)
                 
                 //Month + Year Label
                 HStack{
                     
                         Text("\(calendarVM.getMonthLabel()),")
-                            .frame(height: 22)
+//                            .frame(height: )
                             .font(.system(size: 20))
 
                      
@@ -128,7 +146,7 @@ struct MonthLabelAndChanger:View {
                     
 
                 }
-                .padding([.trailing, .leading], 54)
+                .padding([.trailing, .leading], 25)
                 
                 
                 
@@ -140,9 +158,9 @@ struct MonthLabelAndChanger:View {
                 }label: {
                     Image(systemName: "chevron.right")
                         .resizable()
-                        .fontWeight(.semibold)
+                        .fontWeight(.bold)
                     
-                        .frame(width: 22, height: 40)
+                        .frame(width: calendarVM.getCalendarFrameSize().width/17, height: calendarVM.getCalendarFrameSize().height/9)
                 }
                 
                 
@@ -154,9 +172,11 @@ struct MonthLabelAndChanger:View {
             
             //Bottom of HStack
         }
+        .frame(height: calendarVM.getCalendarFrameSize().height/9)
         
     }
-    
+        
+ 
 }
 
 
@@ -165,6 +185,8 @@ struct MonthLabelAndChanger:View {
 
 ///This view is the view that places the weekday names onto the calendar.
 struct WeekdayNamesRow: View {
+    @EnvironmentObject var calendarVM:CalendarViewModel
+
     
     var weekDaysArray:[String] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
     
@@ -178,7 +200,8 @@ struct WeekdayNamesRow: View {
                     Spacer()
                     
                     Text(weekday)
-                        .frame(width: 32)
+                        .frame(width: calendarVM.getCalendarFrameSize().width / 11)
+//                        .frame(width: 32)
                     
                     Spacer()
                         
@@ -190,8 +213,9 @@ struct WeekdayNamesRow: View {
             //.frame(width: 32, height: 18)
             
             
-            
+            //Bottom of Hstack
         }
+    
         
         
     }
@@ -210,6 +234,8 @@ struct WeekdayNamesRow: View {
 ///
 ///This is for the Ability to be swapped with a reduced view to see only the  current weeks values
 struct CalenderFullBodyView: View {
+    @EnvironmentObject var calendarVM:CalendarViewModel
+
     
     var week1Row:[Int]
     var week2Row:[Int]
@@ -244,7 +270,7 @@ struct CalenderFullBodyView: View {
                 ForEach(combinedWeeks, id:\.self){ weekRow in
                                         
                     WeekRowView(dayRows: weekRow)
-                    
+                        .frame(height: calendarVM.getCalendarFrameSize().height / 11)
                     
                 }
                 
@@ -254,6 +280,7 @@ struct CalenderFullBodyView: View {
             
             //Bottom Of Vstack
         }
+        //Transition to make the days move (reduce dullness)
         
         //Side To Side Padding
     }
@@ -271,6 +298,9 @@ struct CalenderFullBodyView: View {
 ///View takes a array of the days that should be put it, **rowDays**
 struct WeekRowView: View {
     
+    @EnvironmentObject var calendarVM:CalendarViewModel
+
+    
     var dayRows:[Int]
     
     var body: some View {
@@ -287,7 +317,7 @@ struct WeekRowView: View {
                     
                     
                     DayCellView(dayNumber: index)
-                        .frame(width: 30)
+                        
                     
                     
                     Spacer()

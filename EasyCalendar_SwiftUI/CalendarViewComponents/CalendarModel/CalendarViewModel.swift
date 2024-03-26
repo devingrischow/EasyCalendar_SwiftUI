@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import SwiftUI
 
 
 
@@ -16,6 +16,22 @@ class CalendarViewModel:ObservableObject{
     //Published variable for the Calendar Model
     @Published var calendarModel:CalendarModel = CalendarModel()
 
+    
+    
+    //MARK: Get Geometry frames Size
+    ///Returns the *CGSize* of the calendars frame
+    func getCalendarFrameSize() -> CGSize{
+        return self.calendarModel.calendarFrameSize
+    }
+    
+    
+    //MARK: Set Geometry Frame Size
+    ///Takes a *New Calendar Size* and sets it to the models frame value
+    func setCalendarFrameSize(newCalendarSize:CGSize){
+        DispatchQueue.main.async {
+            self.calendarModel.calendarFrameSize = newCalendarSize
+        }
+    }
     
     
     //MARK: Get the Months Days
@@ -416,6 +432,9 @@ class CalendarViewModel:ObservableObject{
             
         }
         //-+————Bottom Of For Loop—————+
+        
+        //Double check the array has 6 rows all FILLED with info
+        print("CALENDAR ROWS", calendarMonthWeeks.count) //Print the count of the rows
         
         
         

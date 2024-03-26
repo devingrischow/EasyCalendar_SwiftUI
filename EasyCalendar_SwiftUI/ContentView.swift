@@ -9,7 +9,32 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        EasyCalendarView() 
+        GeometryReader{ geometry in
+            
+            VStack{
+                Spacer()
+                
+                
+                Text("Plain Text")
+                Text("Plain Text")
+                
+                Spacer()
+                
+                EasyCalendarView().frame(height: geometry.size.height / 2)
+                
+                Spacer()
+                
+                Text("Plain Text")
+                
+                
+                Spacer()
+                //Bottom Of Vstack
+            }
+         
+            
+            
+            //Bottom Of Geometry Reader
+        }
     }
 }
 

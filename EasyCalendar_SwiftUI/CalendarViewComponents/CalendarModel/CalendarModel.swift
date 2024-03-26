@@ -21,5 +21,12 @@ struct CalendarModel{
     var calendarWeeksBody:[[Int]] = []
     
     
+    //MARK: Calendar geometry reader sizes
+    var calendarFrameSize:CGSize = .zero
+    
+    
+    
+    
+    
     
 }
